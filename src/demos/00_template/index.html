@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>React - Template</title>
+    <script src="../../js/react.min.js"></script>
+    <script src="../../js/react-dom.min.js"></script>
+    <script src="../../js/browser.min.js"></script>
+</head>
+<body>
+    <div id="example"></div>
+    <script type="text/babel">
+
+     var Comment = React.createClass({
+         getInitialState:function(){
+             return {editing:false}
+         },
+         edit:function(){
+             this.setState({editing:true});
+         },
+         remove:function(){
+             this.props.deleteComment(this.props.index);
+         },
+         save:function () {
+             var val = this.refs.newText.value;
+             this.props.updateComment(val,this.props.index);
+             this.setState({editing:false});
+         },
+         normalRender:function(){
+             return(
+                     <div>
+                         <h1>{this.props.children}</h1>
+                         <button onClick={this.edit}>edit</button>
+                         <button onClick={this.remove}>remove</button>
+                     </div>
+             )
+         },
+         normalForm:function(){
+             return(<div>
+                         <textarea ref="newText" defaultValue={this.props.children} cols="30" rows="10" />
+                 <button onClick={this.save}>save</button>
+
+             </div>
+             )
+         },
+         render:function(){
+             if(this.state.editing){
+                 return this.normalForm();
+             }else{
+                 return this.normalRender();
+             }
+         }
+     });
+
+     var Board = React.createClass({
+         getInitialState:function(){
+             return {
+                 comments:[]
+             }
+         },
+         add:function(text){
+             var arr = this.state.comments;
+             arr.push(text);
+             this.setState({comments:arr});
+         },
+         removeComment:function (i) {
+           var arr = this.state.comments;
+           arr.splice(i,1);
+           this.setState({comments:arr});
+         },
+         saveComment:function (newText,i) {
+           var arr=this.state.comments;
+           arr[i]=newText;
+           this.setState({comments:arr});
+         },
+         eachComment:function(text, i){
+             return (<Comment key={i} index={i} updateComment={this.saveComment} deleteComment={this.removeComment}>
+                 {text}</Comment>);
+         },
+         render:function(){
+             return (
+                 <div>
+                     <button onClick={this.add.bind(null,'default text')}>add</button>
+                     <div>
+                         {this.state.comments.map(this.eachComment)}
+                     </div>
+                 </div>
+
+             )
+         }
+     });
+
+     ReactDOM.render(
+     <Board/>,document.getElementById('example'));
+    </script>
+
+</body>
+</html>
